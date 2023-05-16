@@ -49,6 +49,25 @@ else:
     val_reader = InHospitalMortalityReader(dataset_dir=os.path.join(args.data, 'train'),
                                       listfile=os.path.join(args.data, 'val_listfile.csv'))
 
+
+import csv
+
+train_file = 'train_reader.csv'
+val_file = 'val_reader.csv'
+
+# Save train_raw to CSV
+with open(train_file, 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(train_reader)
+
+# Save val_raw to CSV
+with open(val_file, 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(val_reader)
+
+print(f"train_reader saved to '{train_file}'")
+print(f"val_reader saved to '{val_file}'")
+
 discretizer = Discretizer(timestep=args.timestep,
                           store_masks=True,
                           impute_strategy='previous',
@@ -66,6 +85,30 @@ if normalizer_state is None:
     normalizer_state = 'ihm_ts{}.input_str:{}.start_time:zero.normalizer'.format(args.timestep, args.imputation)
     normalizer_state = os.path.join(os.path.dirname(__file__), normalizer_state)
 normalizer.load_params(normalizer_state)
+
+
+import csv
+
+train_file = 'train_reader_after.csv'
+val_file = 'val_reader_after.csv'
+
+# Save train_raw to CSV
+with open(train_file, 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(train_reader)
+
+# Save val_raw to CSV
+with open(val_file, 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(val_reader)
+
+print(f"train_reader_after saved to '{train_file}'")
+print(f"val_reader_after saved to '{val_file}'")
+
+discretizer = Discretizer(timestep=args.timestep,
+                          store_masks=True,
+                          impute_strategy='previous',
+                          start_time='zero')
 
 args_dict = dict(args._get_kwargs())
 args_dict['header'] = discretizer_header
@@ -119,6 +162,31 @@ if args.load_state != "":
 # Read data
 train_raw = preprocessing.load_data(train_reader, discretizer, normalizer, args.small_part)
 val_raw = preprocessing.load_data(val_reader, discretizer, normalizer, args.small_part)
+
+
+print("Size of train_raw:", len(train_raw))
+print("Size of val_raw:", len(val_raw))
+
+print("Type of train_raw:", type(train_raw))
+print("Type of val_raw:", type(val_raw))
+
+import csv
+
+train_file = 'train_data.csv'
+val_file = 'val_data.csv'
+
+# Save train_raw to CSV
+with open(train_file, 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(train_raw)
+
+# Save val_raw to CSV
+with open(val_file, 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(val_raw)
+
+print(f"Train data saved to '{train_file}'")
+print(f"Validation data saved to '{val_file}'")
 
 if target_repl:
     T = train_raw[0][0].shape[0]
